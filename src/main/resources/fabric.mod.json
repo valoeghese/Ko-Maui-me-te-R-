@@ -1,0 +1,30 @@
+{
+  "schemaVersion": 1,
+  "id": "metera",
+  "version": "1.0.0",
+  
+  "name": "Metera",
+  "description": "Mod Description.",
+  "authors": [
+    "Me!"
+  ],
+  
+  "icon": "assets/metera/icon.png",
+  "license": "No Licence.",
+  
+  "environment": "*",
+  
+  "entrypoints": {
+    "main": [
+      "valoeghese.metera.Metera"
+    ]
+  },
+  
+  "requires": {
+    "fabricloader": ">=0.4.0"
+  },
+  
+  "mixins": [
+    "metera.mixins.json"
+  ]
+}

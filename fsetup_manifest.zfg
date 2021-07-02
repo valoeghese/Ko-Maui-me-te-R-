@@ -1,0 +1,15 @@
+#Will be used in the future for updating workspaces to new versions.
+
+minecraft = 1.17;
+
+yarn = 13;
+
+group = valoeghese;
+
+modid = metera;
+
+libs = [
+  Fabric API;
+]
+
+

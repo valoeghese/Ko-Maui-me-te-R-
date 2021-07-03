@@ -52,10 +52,10 @@ public class TeRaa extends FlyingEntity {
 			for (int y = 4; y >= 3; --y) {
 				pos.setY(start.getY() + y);
 
-				for (int x = -3; x <= 3; ++x) {
+				for (int x = -2; x <= 2; ++x) {
 					pos.setX(start.getX() + x);
 
-					for (int z = -3; z <= 3; ++z) {
+					for (int z = -2; z <= 2; ++z) {
 						pos.setZ(start.getZ() + z);
 						this.world.breakBlock(pos, false);
 					}

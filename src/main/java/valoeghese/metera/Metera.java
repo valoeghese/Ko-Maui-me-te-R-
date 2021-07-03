@@ -10,8 +10,9 @@ import net.fabricmc.fabric.api.object.builder.v1.entity.FabricEntityTypeBuilder;
 import net.fabricmc.loader.api.FabricLoader;
 import net.minecraft.entity.EntityDimensions;
 import net.minecraft.entity.EntityType;
-import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.SpawnGroup;
+import net.minecraft.entity.attribute.EntityAttributes;
+import net.minecraft.entity.mob.MobEntity;
 import net.minecraft.util.registry.Registry;
 
 public class Metera implements ModInitializer {
@@ -22,9 +23,10 @@ public class Metera implements ModInitializer {
 	@Override
 	public void onInitialize() {
 		TE_RAA = Registry.register(Registry.ENTITY_TYPE, "metera:te_raa", FabricEntityTypeBuilder.create(SpawnGroup.AMBIENT, TeRaa::new)
-				.dimensions(EntityDimensions.fixed(0.4f, 0.8f))
+				.dimensions(EntityDimensions.fixed(4.0f, 4.0f))
 				.build());
-		FabricDefaultAttributeRegistry.register(TE_RAA, LivingEntity.createLivingAttributes());
+		FabricDefaultAttributeRegistry.register(TE_RAA, MobEntity.createMobAttributes()
+				.add(EntityAttributes.GENERIC_MAX_HEALTH, 50.0D).add(EntityAttributes.GENERIC_FOLLOW_RANGE, 50.0D));
 		
 		// I don't feel like using a CMI
 		if (FabricLoader.getInstance().getEnvironmentType() == EnvType.CLIENT) {

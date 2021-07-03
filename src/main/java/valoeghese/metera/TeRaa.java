@@ -20,10 +20,12 @@ public class TeRaa extends FlyingEntity {
 	public TeRaa(EntityType<? extends FlyingEntity> entityType, World world) {
 		super(entityType, world);
 		this.setNoGravity(true);
-		bossBar = new ServerBossBar(getDisplayName(), ServerBossBar.Color.YELLOW, ServerBossBar.Style.PROGRESS);
+		this.bossBar = new ServerBossBar(getDisplayName(), ServerBossBar.Color.YELLOW, ServerBossBar.Style.PROGRESS);
 	}
 
 	private final ServerBossBar bossBar;
+	private boolean invulnerable;
+	private boolean drag;
 
 	@Override
 	protected void initGoals() {
@@ -33,10 +35,52 @@ public class TeRaa extends FlyingEntity {
 		}));
 	}
 
+	/**
+	 * Used when it needs to calculate or recalculate velocity
+	 */
+	public void calculateVeclocity(boolean drag) {
+		if (this.invulnerable) {
+			this.setVelocity(0.0, 1.0, 0.0);
+		} else if (drag) {
+			this.setVelocity(0.0, 0.1, 0.0);
+		} else {
+			long targetTime = 23000;
+			long thisTime = this.world.getTimeOfDay() % 24000L;
+
+			if (thisTime > targetTime) {
+				this.invulnerable = true;
+				this.setVelocity(0.0, 1.0, 0.0);
+			} else {
+				double targetHeight = this.world.getTopY() + 64;
+				double thisHeight = this.getY();
+				this.setVelocity(0.0, (targetHeight - thisHeight) / (double) (targetTime - thisTime), 0.0);
+			}
+		}
+	}
+
+	public boolean damage(DamageSource source, float amount) {
+		// Invulnerable once past world height by 16 blocks
+		if (this.invulnerable) {
+			// Nothing.
+			return false;
+		} else {
+			return this.damage(source, amount);
+		}
+	}
+
 	@Override
 	public void tick() {
-		if (!this.world.isClient) {
-			this.setVelocity(0.0, 1.0, 0.0); // todo the sun rises
+		if (!this.invulnerable) {
+			if (this.getY() > this.world.getTopY() + 16) {
+				this.invulnerable = true;
+				if (!this.world.isClient) {
+					bossBar.clearPlayers();
+				}
+			}
+
+			if (!this.world.isClient) {
+				this.calculateVeclocity(false);
+			}
 		}
 
 		super.tick();

@@ -10,6 +10,7 @@ import net.minecraft.entity.mob.FlyingEntity;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.entity.projectile.FireballEntity;
 import net.minecraft.server.network.ServerPlayerEntity;
+import net.minecraft.server.world.ServerWorld;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.BlockPos.Mutable;
 import net.minecraft.util.math.Vec3d;
@@ -71,7 +72,10 @@ public class TeRaa extends FlyingEntity {
 		if (source == DamageSource.OUT_OF_WORLD) {
 			this.setHealth(1.0f);
 			this.invulnerable = true;
-			// TODO u win
+			
+			if (!this.world.isClient) {
+				WorldData.get(((ServerWorld) this.world)).setDaySpeed(1L);
+			}
 		} else {
 			super.onDeath(source);
 		}

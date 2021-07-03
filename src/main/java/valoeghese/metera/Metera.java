@@ -27,10 +27,11 @@ public class Metera implements ModInitializer {
 				.build());
 		FabricDefaultAttributeRegistry.register(TE_RAA, MobEntity.createMobAttributes()
 				.add(EntityAttributes.GENERIC_MAX_HEALTH, 50.0D).add(EntityAttributes.GENERIC_FOLLOW_RANGE, 50.0D));
-		
+
 		// I don't feel like using a CMI
 		if (FabricLoader.getInstance().getEnvironmentType() == EnvType.CLIENT) {
 			MeteraModels.init();
+			Network.init();
 		}
 	}
 }

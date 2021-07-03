@@ -3,14 +3,14 @@
   "id": "metera",
   "version": "1.0.0",
   
-  "name": "Metera",
-  "description": "Mod Description.",
+  "name": "Ko Maui me te rā",
+  "description": "Kei te tāpiri i te kōrero \"Ko Maui me te rā\".",
   "authors": [
-    "Me!"
+    "Valoeghese"
   ],
   
   "icon": "assets/metera/icon.png",
-  "license": "No Licence.",
+  "license": "MIT",
   
   "environment": "*",
   

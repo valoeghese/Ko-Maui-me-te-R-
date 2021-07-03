@@ -25,6 +25,7 @@ public class TeRaa extends FlyingEntity {
 
 	private final ServerBossBar bossBar;
 	private boolean invulnerable;
+	private boolean drag;
 
 	@Override
 	protected void initGoals() {
@@ -37,17 +38,16 @@ public class TeRaa extends FlyingEntity {
 	/**
 	 * Used when it needs to calculate or recalculate velocity
 	 */
-	public void calculateVeclocity(boolean drag) {
+	public void calculateVelocity(boolean drag) {
 		if (this.invulnerable) {
 			this.setVelocity(0.0, 1.0, 0.0);
 		} else if (drag) {
-			this.setVelocity(0.0, 0.1, 0.0);
+			this.setVelocity(0.0, 0.05, 0.0);
 		} else {
 			long targetTime = 23000;
 			long thisTime = this.world.getTimeOfDay() % 24000L;
 
 			if (thisTime > targetTime) {
-				this.invulnerable = true;
 				this.setVelocity(0.0, 1.0, 0.0);
 			} else {
 				double targetHeight = this.world.getTopY() + 64;
@@ -58,27 +58,42 @@ public class TeRaa extends FlyingEntity {
 	}
 
 	public boolean damage(DamageSource source, float amount) {
-		// Invulnerable once past world height by 16 blocks
-		if (this.invulnerable) {
+		if (this.invulnerable || source != DamageSource.OUT_OF_WORLD) {
 			// Nothing.
 			return false;
 		} else {
-			return this.damage(source, amount);
+			return super.damage(source, amount);
+		}
+	}
+
+	@Override
+	public void onDeath(DamageSource source) {
+		if (source == DamageSource.OUT_OF_WORLD) {
+			this.setHealth(1.0f);
+			this.invulnerable = true;
+			// TODO u win
+		} else {
+			super.onDeath(source);
 		}
 	}
 
 	@Override
 	public void tick() {
-		if (!this.invulnerable) {
+		if (this.invulnerable) {
+			this.calculateVelocity(false);
+		} else {
+			// Invulnerable once past world height by 16 blocks
 			if (this.getY() > this.world.getTopY() + 16) {
 				this.invulnerable = true;
+
 				if (!this.world.isClient) {
+					// clear players from boss bar
 					bossBar.clearPlayers();
 				}
 			}
 
 			if (!this.world.isClient) {
-				this.calculateVeclocity(false);
+				this.calculateVelocity(this.drag);
 			}
 		}
 
@@ -100,6 +115,7 @@ public class TeRaa extends FlyingEntity {
 
 					for (int z = -2; z <= 2; ++z) {
 						pos.setZ(start.getZ() + z);
+						// breakBlock checks air for us, so no need to duplicate the check.
 						this.world.breakBlock(pos, false);
 					}
 				}
@@ -109,7 +125,9 @@ public class TeRaa extends FlyingEntity {
 
 	@Override
 	public void onStartedTrackingBy(ServerPlayerEntity player) {
-		bossBar.addPlayer(player);
+		if (!this.invulnerable) {
+			bossBar.addPlayer(player);
+		}
 	}
 
 	@Override
@@ -140,7 +158,7 @@ public class TeRaa extends FlyingEntity {
 				World world = TeRaa.this.world;
 				++this.cooldown;
 				if (this.cooldown == 10 && !TeRaa.this.isSilent()) {
-					world.syncWorldEvent((PlayerEntity)null, WorldEvents.GHAST_WARNS, TeRaa.this.getBlockPos(), 0);
+					world.syncWorldEvent((PlayerEntity)null, WorldEvents.LAVA_EXTINGUISHED, TeRaa.this.getBlockPos(), 0);
 				}
 
 				if (this.cooldown == 20) {

@@ -50,7 +50,7 @@ public class TeRaa extends FlyingEntity {
 
 		public void tick() {
 			LivingEntity livingEntity = TeRaa.this.getTarget();
-			double d = 64.0D;
+
 			if (livingEntity.squaredDistanceTo(TeRaa.this) < 2048.0D && TeRaa.this.canSee(livingEntity)) {
 				World world = TeRaa.this.world;
 				++this.cooldown;
@@ -59,7 +59,6 @@ public class TeRaa extends FlyingEntity {
 				}
 
 				if (this.cooldown == 20) {
-					double e = 4.0D;
 					Vec3d vec3d = TeRaa.this.getRotationVec(1.0F);
 					double f = livingEntity.getX() - (TeRaa.this.getX() + vec3d.x * 4.0D);
 					double g = livingEntity.getBodyY(0.5D) - (0.5D + TeRaa.this.getBodyY(0.5D));

@@ -22,10 +22,10 @@ repositories {
 		name = 'Ladysnake Mods'
 		url = 'https://ladysnake.jfrog.io/artifactory/mods'
 	}
-	maven {
+	/*maven {
 	    name = "Geckolib"
 		url = "https://dl.cloudsmith.io/public/geckolib3/geckolib/maven/"
-	}
+	}*/
 }
 
 dependencies {
@@ -34,7 +34,7 @@ dependencies {
 	modImplementation "net.fabricmc:fabric-loader:${project.loader_version}"
 	
 	modImplementation "net.fabricmc.fabric-api:fabric-api:${project.fabric_version}"
-	modImplementation "software.bernie.geckolib:geckolib-fabric-1.17:3.0.5:dev"
+	//modImplementation "software.bernie.geckolib:geckolib-fabric-1.17:3.0.5:dev"
 
 	compileOnly "com.google.code.findbugs:jsr305:3.0.2"
 }

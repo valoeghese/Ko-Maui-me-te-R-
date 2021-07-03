@@ -25,7 +25,6 @@ public class TeRaa extends FlyingEntity {
 
 	private final ServerBossBar bossBar;
 	private boolean invulnerable;
-	private boolean drag;
 
 	@Override
 	protected void initGoals() {

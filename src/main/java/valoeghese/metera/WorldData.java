@@ -14,7 +14,13 @@ public final class WorldData extends PersistentState {
 	}
 
 	private long daySpeed = 1L;
+	private transient ServerWorld world;
 	public static long clientDaySpeed;
+
+	public WorldData setServerWorld(ServerWorld world) {
+		this.world = world;
+		return this;
+	}
 
 	public long getDaySpeed() {
 		return this.daySpeed;
@@ -23,7 +29,7 @@ public final class WorldData extends PersistentState {
 	public void setDaySpeed(long daySpeed) {
 		if (this.daySpeed != daySpeed) {
 			this.daySpeed = daySpeed;
-			
+			Network.syncs2c(this.world.getServer().getPlayerManager().getPlayerList(), this.daySpeed);
 			this.markDirty();
 		}
 	}
@@ -35,7 +41,7 @@ public final class WorldData extends PersistentState {
 	}
 
 	public static WorldData get(ServerWorld world) {
-		return world.getPersistentStateManager().getOrCreate(WorldData::new, WorldData::new, "metera");
+		return world.getPersistentStateManager().getOrCreate(WorldData::new, WorldData::new, "metera").setServerWorld(world);
 	}
 
 	public static long getDaySpeed(World world) {

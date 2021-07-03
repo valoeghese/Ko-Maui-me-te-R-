@@ -1,5 +1,7 @@
 package valoeghese.metera.mixin;
 
+import java.util.List;
+
 import org.spongepowered.asm.mixin.Final;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Shadow;
@@ -27,8 +29,7 @@ public class MixinPlayerManager {
 
 	@Inject(at = @At("RETURN"), method = "onPlayerConnect")
 	private void onOnPlayerConnect(ClientConnection connection, ServerPlayerEntity player, CallbackInfo info) {
-		PacketByteBuf buf = new PacketByteBuf(Unpooled.buffer());
-		buf.writeLong(WorldData.getDaySpeed(this.server.getWorld(World.OVERWORLD)));
-		ServerSidePacketRegistry.INSTANCE.sendToPlayer(player, Network.SYNC_ID, buf);
+		long speed = WorldData.getDaySpeed(this.server.getWorld(World.OVERWORLD));
+		Network.syncs2c(List.of(player), speed);
 	}
 }

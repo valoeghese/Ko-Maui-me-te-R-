@@ -6,6 +6,9 @@ import net.minecraft.entity.ai.goal.FollowTargetGoal;
 import net.minecraft.entity.ai.goal.Goal;
 import net.minecraft.entity.boss.ServerBossBar;
 import net.minecraft.entity.damage.DamageSource;
+import net.minecraft.entity.data.DataTracker;
+import net.minecraft.entity.data.TrackedData;
+import net.minecraft.entity.data.TrackedDataHandlerRegistry;
 import net.minecraft.entity.mob.FlyingEntity;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.entity.projectile.FireballEntity;
@@ -25,8 +28,23 @@ public class TeRaa extends FlyingEntity {
 	}
 
 	private final ServerBossBar bossBar;
-	private boolean invulnerable;
-	private int draggers;
+	private static final TrackedData<Boolean> INVULNERABLE = DataTracker.registerData(TeRaa.class, TrackedDataHandlerRegistry.BOOLEAN);
+	private static final TrackedData<Integer> DRAGGERS = DataTracker.registerData(TeRaa.class, TrackedDataHandlerRegistry.INTEGER);
+
+	@Override
+	protected void initDataTracker() {
+		super.initDataTracker();
+		this.dataTracker.startTracking(DRAGGERS, 1);
+		this.dataTracker.startTracking(INVULNERABLE, false);
+	}
+
+	private boolean invulnerable() {
+		return this.dataTracker.get(INVULNERABLE);
+	}
+
+	private void markInvulnerable() {
+		this.dataTracker.set(INVULNERABLE, true);
+	}
 
 	@Override
 	protected void initGoals() {
@@ -37,8 +55,8 @@ public class TeRaa extends FlyingEntity {
 	}
 
 	public void addDragger(int count) {
-		if (!this.invulnerable) {
-			this.draggers += count;
+		if (!this.invulnerable()) {
+			this.dataTracker.set(DRAGGERS, this.dataTracker.get(DRAGGERS) + count);
 		}
 	}
 
@@ -46,9 +64,9 @@ public class TeRaa extends FlyingEntity {
 	 * Used when it needs to calculate or recalculate velocity
 	 */
 	public void calculateVelocity(boolean drag) {
-		if (this.invulnerable && !drag) {
+		if (this.invulnerable() && !drag) {
 			this.setVelocity(0.0, 1.0, 0.0);
-		} else if (!this.invulnerable) {
+		} else if (!this.invulnerable()) {
 			long targetTime = 23000;
 			long thisTime = this.world.getTimeOfDay() % 24000L;
 
@@ -57,13 +75,13 @@ public class TeRaa extends FlyingEntity {
 			} else {
 				double targetHeight = this.world.getTopY() + 64;
 				double thisHeight = this.getY();
-				this.setVelocity(0.0, (targetHeight - thisHeight) / (double) ((targetTime - thisTime) / WorldData.getDaySpeed(this.world)) * (drag ? 0.2 : 1.0), 0.0);
+				this.setVelocity(0.0, (targetHeight - thisHeight) / (double) ((targetTime - thisTime) / WorldData.getActualDaySpeed(this.world)) * (drag ? 0.2 : 1.0), 0.0);
 			}
 		}
 	}
 
 	public boolean damage(DamageSource source, float amount) {
-		if (this.invulnerable || source != DamageSource.OUT_OF_WORLD) {
+		if (this.invulnerable() || source != DamageSource.OUT_OF_WORLD) {
 			// Nothing.
 			return false;
 		} else {
@@ -75,8 +93,8 @@ public class TeRaa extends FlyingEntity {
 	public void onDeath(DamageSource source) {
 		if (source == DamageSource.OUT_OF_WORLD) {
 			this.setHealth(1.0f);
-			this.invulnerable = true;
-			this.draggers = 69420; // I mean it should be >1 but just in case we make it a special bunny value
+			this.markInvulnerable();
+			this.dataTracker.set(DRAGGERS, 69420); // I mean it should be >1 but just in case we make it a special bunny value
 			
 			if (!this.world.isClient) {
 				WorldData.get(((ServerWorld) this.world)).setDaySpeed(1L);
@@ -88,15 +106,15 @@ public class TeRaa extends FlyingEntity {
 
 	@Override
 	public void tick() {
-		if (this.invulnerable) {
-			this.calculateVelocity(this.draggers > 0);
+		if (this.invulnerable()) {
+			this.calculateVelocity(this.dataTracker.get(DRAGGERS) > 0);
 		} else {
 			// Invulnerable once past the time limit
 			long targetTime = 23000;
 			long thisTime = this.world.getTimeOfDay() % 24000L;
 
 			if (thisTime > targetTime) {
-				this.invulnerable = true;
+				this.markInvulnerable();
 
 				if (!this.world.isClient) {
 					// clear players from boss bar
@@ -105,7 +123,7 @@ public class TeRaa extends FlyingEntity {
 			}
 
 			if (!this.world.isClient) {
-				this.calculateVelocity(this.draggers > 0);
+				this.calculateVelocity(this.dataTracker.get(DRAGGERS) > 0);
 			}
 		}
 
@@ -137,7 +155,7 @@ public class TeRaa extends FlyingEntity {
 
 	@Override
 	public void onStartedTrackingBy(ServerPlayerEntity player) {
-		if (!this.invulnerable) {
+		if (!this.invulnerable()) {
 			bossBar.addPlayer(player);
 		}
 	}

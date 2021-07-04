@@ -51,4 +51,9 @@ public final class WorldData extends PersistentState {
 			return get((ServerWorld) world).getDaySpeed();
 		}
 	}
+
+	public static long getActualDaySpeed(World world) {
+		long time = world.getTimeOfDay() % 24000L;
+		return (time < 12500L || time > 23500L) ? 1L : getDaySpeed(world);
+	}
 }

@@ -15,6 +15,6 @@ public class MixinClientWorld {
 			constant = @Constant(longValue = 1L, ordinal = 1)
 			)
 	private long getIncrement(long incr) {
-		return WorldData.getDaySpeed((World) (Object) this);
+		return WorldData.getActualDaySpeed((World) (Object) this);
 	}
 }

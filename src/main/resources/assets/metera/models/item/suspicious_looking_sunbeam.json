@@ -1,0 +1,6 @@
+{
+  "parent": "item/generated",
+  "layers": {
+    "layer0": "metera:item/suspicious_looking_sunbeam"
+  }
+}

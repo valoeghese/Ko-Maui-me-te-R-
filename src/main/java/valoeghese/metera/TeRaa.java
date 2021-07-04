@@ -95,7 +95,7 @@ public class TeRaa extends FlyingEntity {
 			this.setHealth(1.0f);
 			this.markInvulnerable();
 			this.dataTracker.set(DRAGGERS, 69420); // I mean it should be >1 but just in case we make it a special bunny value
-			
+
 			if (!this.world.isClient) {
 				WorldData.get(((ServerWorld) this.world)).setDaySpeed(1L);
 			}
@@ -132,21 +132,27 @@ public class TeRaa extends FlyingEntity {
 		if (!this.world.isClient) {
 			if (this.getY() > this.world.getTopY() + 64) {
 				this.remove(RemovalReason.DISCARDED);
-			}
+			} else {
+				if (this.dataTracker.get(DRAGGERS) > 0) {
+					this.damage(DamageSource.OUT_OF_WORLD, 1);
+				}
 
-			BlockPos start = this.getBlockPos();
-			Mutable pos = new Mutable();
+				BlockPos start = this.getBlockPos();
+				Mutable pos = new Mutable();
 
-			for (int y = 4; y >= 3; --y) {
-				pos.setY(start.getY() + y);
+				for (int y = 4; y >= 3; --y) {
+					pos.setY(start.getY() + y);
 
-				for (int x = -2; x <= 2; ++x) {
-					pos.setX(start.getX() + x);
+					if (pos.getY() < this.world.getTopY()) {
+						for (int x = -2; x <= 2; ++x) {
+							pos.setX(start.getX() + x);
 
-					for (int z = -2; z <= 2; ++z) {
-						pos.setZ(start.getZ() + z);
-						// breakBlock checks air for us, so no need to duplicate the check.
-						this.world.breakBlock(pos, false);
+							for (int z = -2; z <= 2; ++z) {
+								pos.setZ(start.getZ() + z);
+								// breakBlock checks air for us, so no need to duplicate the check.
+								this.world.breakBlock(pos, false);
+							}
+						}
 					}
 				}
 			}

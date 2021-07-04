@@ -13,6 +13,7 @@ import net.minecraft.entity.EntityType;
 import net.minecraft.entity.SpawnGroup;
 import net.minecraft.entity.attribute.EntityAttributes;
 import net.minecraft.entity.mob.MobEntity;
+import net.minecraft.item.Item;
 import net.minecraft.util.registry.Registry;
 
 public class Metera implements ModInitializer {
@@ -27,6 +28,8 @@ public class Metera implements ModInitializer {
 				.build());
 		FabricDefaultAttributeRegistry.register(TE_RAA, MobEntity.createMobAttributes()
 				.add(EntityAttributes.GENERIC_MAX_HEALTH, 50.0D).add(EntityAttributes.GENERIC_FOLLOW_RANGE, 50.0D));
+
+		Registry.register(Registry.ITEM, "metera:suspicious_looking_sunbeam", new EventTriggerItem(new Item.Settings().fireproof().maxCount(1)));
 
 		// I don't feel like using a CMI
 		if (FabricLoader.getInstance().getEnvironmentType() == EnvType.CLIENT) {

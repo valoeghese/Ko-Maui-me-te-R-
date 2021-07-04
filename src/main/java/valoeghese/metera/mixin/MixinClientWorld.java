@@ -5,6 +5,8 @@ import org.spongepowered.asm.mixin.injection.Constant;
 import org.spongepowered.asm.mixin.injection.ModifyConstant;
 
 import net.minecraft.client.world.ClientWorld;
+import net.minecraft.world.World;
+import valoeghese.metera.WorldData;
 
 @Mixin(ClientWorld.class)
 public class MixinClientWorld {
@@ -13,6 +15,6 @@ public class MixinClientWorld {
 			constant = @Constant(longValue = 1L, ordinal = 1)
 			)
 	private long getIncrement(long incr) {
-		return 5L;
+		return WorldData.getDaySpeed((World) (Object) this);
 	}
 }

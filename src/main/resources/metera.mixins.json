@@ -3,6 +3,7 @@
   "package": "valoeghese.metera.mixin",
   "compatibilityLevel": "JAVA_8",
   "mixins": [
+    "MixinBobber",
     "MixinServerWorld",
     "MixinPlayerManager"
   ],

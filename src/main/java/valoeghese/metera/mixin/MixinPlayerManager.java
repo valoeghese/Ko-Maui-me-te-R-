@@ -9,10 +9,7 @@ import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
-import io.netty.buffer.Unpooled;
-import net.fabricmc.fabric.api.network.ServerSidePacketRegistry;
 import net.minecraft.network.ClientConnection;
-import net.minecraft.network.PacketByteBuf;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.PlayerManager;
 import net.minecraft.server.network.ServerPlayerEntity;
@@ -20,7 +17,6 @@ import net.minecraft.world.World;
 import valoeghese.metera.Network;
 import valoeghese.metera.WorldData;
 
-@SuppressWarnings("deprecation")
 @Mixin(PlayerManager.class)
 public class MixinPlayerManager {
 	@Shadow

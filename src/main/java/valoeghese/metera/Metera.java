@@ -17,6 +17,7 @@ import net.minecraft.entity.mob.MobEntity;
 import net.minecraft.item.Item;
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.server.world.ServerWorld;
+import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.ChunkPos;
 import net.minecraft.util.registry.Registry;
 import net.minecraft.world.Heightmap;
@@ -45,8 +46,10 @@ public class Metera implements ModInitializer {
 					ChunkPos cp = player.getChunkPos();
 					BlockPos bp = player.getBlockPos();
 
-					if (cp.x == 0 && cp.z == 0 && player.getPos().getY() > world.getChunk(cp.x, cp.z).getHeightmap(Heightmap.Type.MOTION_BLOCKING).get(bp.x, 0)) {
-						
+					if (cp.x == 0 && cp.z == 0 && player.getPos().getY() > world.getChunk(cp.x, cp.z).getHeightmap(Heightmap.Type.MOTION_BLOCKING).get(bp.x, bp.z)) {
+						TeRaa boss = TE_RAA.create(world);
+						boss.refreshPositionAndAngles(bp.up(), 0, 0);
+						world.spawnEntity(boss);
 					}
 				}
 			}

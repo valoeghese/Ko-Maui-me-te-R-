@@ -46,7 +46,7 @@ public class Metera implements ModInitializer {
 					ChunkPos cp = player.getChunkPos();
 					BlockPos bp = player.getBlockPos();
 
-					if (cp.x == 0 && cp.z == 0 && player.getPos().getY() > world.getChunk(cp.x, cp.z).getHeightmap(Heightmap.Type.MOTION_BLOCKING).get(bp.x, bp.z)) {
+					if (cp.x == 0 && cp.z == 0 && player.getPos().getY() > world.getChunk(cp.x, cp.z).getHeightmap(Heightmap.Type.MOTION_BLOCKING).get(bp.getX(), bp.getZ())) {
 						TeRaa boss = TE_RAA.create(world);
 						boss.refreshPositionAndAngles(bp.up(), 0, 0);
 						world.spawnEntity(boss);

@@ -44,39 +44,42 @@ public class TeRaa extends FlyingEntity {
 
 	private void markInvulnerable() {
 		this.dataTracker.set(INVULNERABLE, true);
+
+		if (!this.world.isClient) {
+			// clear players from boss bar
+			this.bossBar.clearPlayers();
+		}
 	}
 
 	@Override
 	protected void initGoals() {
 		this.goalSelector.add(7, new ShootFireballGoal());
 		this.targetSelector.add(1, new FollowTargetGoal<>(this, PlayerEntity.class, 10, true, false, (livingEntity) -> {
-			return true; // todo only shoot those who have roped them
+			return true; // todo only shoot those who have roped them?
 		}));
 	}
 
 	public void addDragger(int count) {
-		if (!this.invulnerable()) {
-			this.dataTracker.set(DRAGGERS, this.dataTracker.get(DRAGGERS) + count);
-		}
+		this.dataTracker.set(DRAGGERS, this.dataTracker.get(DRAGGERS) + count);
 	}
 
 	/**
 	 * Used when it needs to calculate or recalculate velocity
 	 */
 	public void calculateVelocity(boolean drag) {
-		if (this.invulnerable() && !drag) {
-			this.setVelocity(0.0, 1.0, 0.0);
-		} else if (!this.invulnerable()) {
-			long targetTime = 23000;
-			long thisTime = this.world.getTimeOfDay() % 24000L;
+		if (!this.world.isClient) {
+			System.out.println(WorldData.get(((ServerWorld) this.world)).getDaySpeed());
+		}
 
-			if (thisTime > targetTime) {
-				this.setVelocity(0.0, 1.0, 0.0);
-			} else {
-				double targetHeight = this.world.getTopY() + 64;
-				double thisHeight = this.getY();
-				this.setVelocity(0.0, (targetHeight - thisHeight) / (double) ((targetTime - thisTime) / WorldData.getActualDaySpeed(this.world)) * (drag ? 0.2 : 1.0), 0.0);
-			}
+		long targetTime = 23000;
+		long thisTime = this.world.getTimeOfDay() % 24000L;
+
+		if (thisTime > targetTime) {
+			this.setVelocity(0.0, 1.0, 0.0);
+		} else {
+			double targetHeight = this.world.getTopY() + 64;
+			double thisHeight = this.getY();
+			this.setVelocity(0.0, (targetHeight - thisHeight) / (double) ((targetTime - thisTime) / WorldData.getActualDaySpeed(this.world)) * (drag ? 0.2 : 1.0), 0.0);
 		}
 	}
 
@@ -95,7 +98,6 @@ public class TeRaa extends FlyingEntity {
 		if (source == DamageSource.OUT_OF_WORLD) {
 			this.setHealth(1.0f);
 			this.markInvulnerable();
-			this.dataTracker.set(DRAGGERS, 69420); // I mean it should be >1 but just in case we make it a special bunny value
 
 			if (!this.world.isClient) {
 				WorldData.get(((ServerWorld) this.world)).setDaySpeed(1L);
@@ -116,11 +118,6 @@ public class TeRaa extends FlyingEntity {
 
 			if (thisTime > targetTime) {
 				this.markInvulnerable();
-
-				if (!this.world.isClient) {
-					// clear players from boss bar
-					this.bossBar.clearPlayers();
-				}
 			}
 
 			if (!this.world.isClient) {
@@ -137,7 +134,7 @@ public class TeRaa extends FlyingEntity {
 				int draggers = this.dataTracker.get(DRAGGERS);
 
 				if (draggers > 0) {
-					this.damage(DamageSource.OUT_OF_WORLD, draggers);
+					this.damage(DamageSource.OUT_OF_WORLD, 10 * draggers);
 				}
 
 				BlockPos start = this.getBlockPos();

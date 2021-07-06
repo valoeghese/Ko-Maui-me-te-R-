@@ -18,7 +18,7 @@ public class EventTriggerItem extends Item {
 		user.getStackInHand(hand).decrement(1);
 
 		if (!world.isClient) {
-			WorldData.get((ServerWorld) world).setDaySpeed(5L);
+			WorldData.get(((ServerWorld) world).getServer().getWorld(World.OVERWORLD)).setDaySpeed(5L);
 		}
 
 		return TypedActionResult.consume(user.getStackInHand(hand));

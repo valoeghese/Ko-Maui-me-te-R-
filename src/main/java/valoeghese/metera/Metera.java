@@ -19,6 +19,7 @@ import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.server.world.ServerWorld;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.ChunkPos;
+import net.minecraft.util.math.Vec3d;
 import net.minecraft.util.registry.Registry;
 import net.minecraft.world.Heightmap;
 import net.minecraft.world.World;
@@ -41,14 +42,17 @@ public class Metera implements ModInitializer {
 		ServerTickEvents.END_SERVER_TICK.register(server -> {
 			// I think each tick adds 1 to time of day so this should run
 			ServerWorld world = server.getWorld(World.OVERWORLD);
-			if (world.getTimeOfDay() % 24000L == 21000L) {
+
+			if (world.getTimeOfDay() % 24000L == 21000L && WorldData.getDaySpeed(world) > 1L) {
 				for (ServerPlayerEntity player : world.getPlayers()) {
 					ChunkPos cp = player.getChunkPos();
 					BlockPos bp = player.getBlockPos();
+					Vec3d pos = player.getPos();
 
-					if (cp.x == 0 && cp.z == 0 && player.getPos().getY() > world.getChunk(cp.x, cp.z).getHeightmap(Heightmap.Type.MOTION_BLOCKING).get(bp.getX(), bp.getZ())) {
+					if (cp.x == 0 && cp.z == 0 && pos.getY() >= Math.max(world.getSeaLevel(), world.getChunk(cp.x, cp.z).getHeightmap(Heightmap.Type.MOTION_BLOCKING).get(bp.getX(), bp.getZ()))) {
 						TeRaa boss = TE_RAA.create(world);
-						boss.refreshPositionAndAngles(bp.up(), 0, 0);
+						pos = pos.add(0.5, 1.05, 0.5);
+						boss.refreshPositionAndAngles(pos.x, pos.y, pos.z, 0.0f, 0.0f);
 						world.spawnEntity(boss);
 					}
 				}

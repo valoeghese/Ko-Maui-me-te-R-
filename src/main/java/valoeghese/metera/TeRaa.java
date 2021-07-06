@@ -34,7 +34,7 @@ public class TeRaa extends FlyingEntity {
 	@Override
 	protected void initDataTracker() {
 		super.initDataTracker();
-		this.dataTracker.startTracking(DRAGGERS, 1);
+		this.dataTracker.startTracking(DRAGGERS, 0);
 		this.dataTracker.startTracking(INVULNERABLE, false);
 	}
 
@@ -80,6 +80,7 @@ public class TeRaa extends FlyingEntity {
 		}
 	}
 
+	@Override
 	public boolean damage(DamageSource source, float amount) {
 		if (this.invulnerable() || source != DamageSource.OUT_OF_WORLD) {
 			// Nothing.
@@ -118,7 +119,7 @@ public class TeRaa extends FlyingEntity {
 
 				if (!this.world.isClient) {
 					// clear players from boss bar
-					bossBar.clearPlayers();
+					this.bossBar.clearPlayers();
 				}
 			}
 
@@ -133,8 +134,10 @@ public class TeRaa extends FlyingEntity {
 			if (this.getY() > this.world.getTopY() + 64) {
 				this.remove(RemovalReason.DISCARDED);
 			} else {
-				if (this.dataTracker.get(DRAGGERS) > 0) {
-					this.damage(DamageSource.OUT_OF_WORLD, 1);
+				int draggers = this.dataTracker.get(DRAGGERS);
+
+				if (draggers > 0) {
+					this.damage(DamageSource.OUT_OF_WORLD, draggers);
 				}
 
 				BlockPos start = this.getBlockPos();
@@ -162,13 +165,13 @@ public class TeRaa extends FlyingEntity {
 	@Override
 	public void onStartedTrackingBy(ServerPlayerEntity player) {
 		if (!this.invulnerable()) {
-			bossBar.addPlayer(player);
+			this.bossBar.addPlayer(player);
 		}
 	}
 
 	@Override
 	public void onStoppedTrackingBy(ServerPlayerEntity player) {
-		bossBar.removePlayer(player);
+		this.bossBar.removePlayer(player);
 	}
 
 	@Override

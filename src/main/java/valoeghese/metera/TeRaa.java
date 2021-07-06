@@ -30,6 +30,8 @@ public class TeRaa extends FlyingEntity {
 	private final ServerBossBar bossBar;
 	private static final TrackedData<Boolean> INVULNERABLE = DataTracker.registerData(TeRaa.class, TrackedDataHandlerRegistry.BOOLEAN);
 	private static final TrackedData<Integer> DRAGGERS = DataTracker.registerData(TeRaa.class, TrackedDataHandlerRegistry.INTEGER);
+	private static final DamageSource BOBBER_DAMAGE = new DamageSource("meteraBobber") {
+	};
 
 	@Override
 	protected void initDataTracker() {
@@ -67,10 +69,6 @@ public class TeRaa extends FlyingEntity {
 	 * Used when it needs to calculate or recalculate velocity
 	 */
 	public void calculateVelocity(boolean drag) {
-		if (!this.world.isClient) {
-			System.out.println(WorldData.get(((ServerWorld) this.world)).getDaySpeed());
-		}
-
 		long targetTime = 23000;
 		long thisTime = this.world.getTimeOfDay() % 24000L;
 
@@ -85,7 +83,7 @@ public class TeRaa extends FlyingEntity {
 
 	@Override
 	public boolean damage(DamageSource source, float amount) {
-		if (this.invulnerable() || source != DamageSource.OUT_OF_WORLD) {
+		if (this.invulnerable() || !(source == BOBBER_DAMAGE || source == DamageSource.OUT_OF_WORLD)) {
 			// Nothing.
 			return false;
 		} else {
@@ -95,7 +93,7 @@ public class TeRaa extends FlyingEntity {
 
 	@Override
 	public void onDeath(DamageSource source) {
-		if (source == DamageSource.OUT_OF_WORLD) {
+		if (source == BOBBER_DAMAGE) {
 			this.setHealth(1.0f);
 			this.markInvulnerable();
 
@@ -134,7 +132,7 @@ public class TeRaa extends FlyingEntity {
 				int draggers = this.dataTracker.get(DRAGGERS);
 
 				if (draggers > 0) {
-					this.damage(DamageSource.OUT_OF_WORLD, 10 * draggers);
+					this.damage(BOBBER_DAMAGE, draggers);
 				}
 
 				BlockPos start = this.getBlockPos();

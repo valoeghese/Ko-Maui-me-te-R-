@@ -108,7 +108,7 @@ public class TeRaa extends FlyingEntity {
 	@Override
 	public void tick() {
 		if (this.invulnerable()) {
-			this.calculateVelocity(this.dataTracker.get(DRAGGERS) > 0);
+			this.calculateVelocity(false);
 		} else {
 			// Invulnerable once past the time limit
 			long targetTime = 23000;
@@ -121,6 +121,8 @@ public class TeRaa extends FlyingEntity {
 			if (!this.world.isClient) {
 				this.calculateVelocity(this.dataTracker.get(DRAGGERS) > 0);
 			}
+
+			this.bossBar.setPercent(this.getHealth() / this.getMaxHealth());
 		}
 
 		super.tick();

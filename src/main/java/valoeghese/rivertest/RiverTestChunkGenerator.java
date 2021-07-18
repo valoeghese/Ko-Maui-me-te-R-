@@ -13,12 +13,10 @@ import net.minecraft.block.Blocks;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.ChunkPos;
-import net.minecraft.util.registry.Registry;
 import net.minecraft.world.ChunkRegion;
 import net.minecraft.world.HeightLimitView;
 import net.minecraft.world.Heightmap;
 import net.minecraft.world.Heightmap.Type;
-import net.minecraft.world.biome.Biome;
 import net.minecraft.world.biome.source.BiomeSource;
 import net.minecraft.world.chunk.Chunk;
 import net.minecraft.world.gen.ChunkRandom;
@@ -153,6 +151,10 @@ public class RiverTestChunkGenerator extends ChunkGenerator {
 		noise *= amplitude;
 		noise += base;
 
+		// todo rivers
+		// I will use so many approximations
+		// that I will put the "engineering" in
+		// "software engineering".
 	}
 
 	@Override

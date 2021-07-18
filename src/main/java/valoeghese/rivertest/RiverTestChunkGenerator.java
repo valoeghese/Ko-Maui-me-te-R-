@@ -96,9 +96,50 @@ public class RiverTestChunkGenerator extends ChunkGenerator {
 		double hillsness = 0.0;
 		double oceanness = 0.0;
 
+		// random large number
+		double md = 1000.0;
+		double pd = 1000.0;
+		double hd = 1000.0;
+		double od = 1000.0;
+
 		for (int gxo = -1; gxo <= 1; ++gxo) {
 			for (int gzo = -1; gzo <= 1; ++gzo) {
-				
+				Vec2d1i mark = Voronoi.sampleVoronoiGrid(gxo, gzo, (int) (this.seed & 0xFFFFFFFL));
+
+				double dx = mark.x() - x;
+				double dy = mark.y() - z;
+				double sqrdist = dx * dx + dy * dy;
+
+				int type = mark.value() % 4;
+
+				if (sqrdist <= 1.0) {
+					switch (type) {
+					case 0:
+						if (sqrdist < md) {
+							md = sqrdist;
+							mountainousness = 1.0 - sqrdist;
+						}
+						break;
+					case 1:
+						if (sqrdist < pd) {
+							pd = sqrdist;
+							plainsness = 1.0 - sqrdist;
+						}
+						break;
+					case 2:
+						if (sqrdist < hd) {
+							hd = sqrdist;
+							hillsness = 1.0 - sqrdist;
+						}
+						break;
+					case 3:
+						if (sqrdist < od) {
+							od = sqrdist;
+							oceanness = 1.0 - sqrdist;
+						}
+						break;
+					}
+				}
 			}
 		}
 
@@ -111,7 +152,7 @@ public class RiverTestChunkGenerator extends ChunkGenerator {
 		double noise = 1.0 - 2 * Math.abs(this.noise.sample(x / period, z / period));
 		noise *= amplitude;
 		noise += base;
-		
+
 	}
 
 	@Override

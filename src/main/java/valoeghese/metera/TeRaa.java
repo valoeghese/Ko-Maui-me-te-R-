@@ -14,6 +14,8 @@ import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.entity.projectile.FireballEntity;
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.server.world.ServerWorld;
+import net.minecraft.sound.SoundCategory;
+import net.minecraft.sound.SoundEvents;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.BlockPos.Mutable;
 import net.minecraft.util.math.Vec3d;
@@ -41,7 +43,7 @@ public class TeRaa extends FlyingEntity {
 	}
 
 	private boolean invulnerable() {
-		return this.dataTracker.get(INVULNERABLE);
+		return this.dataTracker.get(INVULNERABLE) || this.getHealth() == 0.42069F;
 	}
 
 	private void markInvulnerable() {
@@ -51,6 +53,8 @@ public class TeRaa extends FlyingEntity {
 			// clear players from boss bar
 			this.bossBar.clearPlayers();
 		}
+
+		this.setHealth(0.42069F); // I swear I literally have to have a marker here it doesn't save properly
 	}
 
 	@Override
@@ -94,10 +98,11 @@ public class TeRaa extends FlyingEntity {
 	@Override
 	public void onDeath(DamageSource source) {
 		if (source == BOBBER_DAMAGE) {
-			this.setHealth(1.0f);
 			this.markInvulnerable();
 
 			if (!this.world.isClient) {
+				Vec3d pos = this.getPos();
+				this.world.playSound(null, pos.x, pos.y, pos.z, SoundEvents.UI_TOAST_CHALLENGE_COMPLETE, SoundCategory.MASTER, 4.0f, 1.0f);
 				WorldData.get(((ServerWorld) this.world)).setDaySpeed(1L);
 			}
 		} else {
@@ -133,7 +138,7 @@ public class TeRaa extends FlyingEntity {
 			} else {
 				int draggers = this.dataTracker.get(DRAGGERS);
 
-				if (draggers > 0) {
+				if (draggers > 0 && this.world.getTime() % 2 == 0) {
 					this.damage(BOBBER_DAMAGE, draggers);
 				}
 
@@ -161,6 +166,7 @@ public class TeRaa extends FlyingEntity {
 
 	@Override
 	public void onStartedTrackingBy(ServerPlayerEntity player) {
+		// tracked data seems to break idk why
 		if (!this.invulnerable()) {
 			this.bossBar.addPlayer(player);
 		}

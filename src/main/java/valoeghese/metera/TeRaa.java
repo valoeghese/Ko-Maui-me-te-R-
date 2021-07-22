@@ -186,7 +186,7 @@ public class TeRaa extends FlyingEntity {
 		public int cooldown;
 
 		public boolean canStart() {
-			return TeRaa.this.getTarget() != null;
+			return TeRaa.this.getTarget() != null && !TeRaa.this.invulnerable();
 		}
 
 		public void start() {
